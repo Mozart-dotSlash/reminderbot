@@ -20,8 +20,14 @@ class Schedule(Resource):
 
         args = parser.parse_args()
         cron = CronTab(user=os.environ['USER'])
+        time = args['taskID'].split()
+
         job = cron.new(
-            command=f"python3 messenger.py {args['userHash']} {args['task']}", comment=args['taskID'])
+            command=f"python3 messenger.py {args['userHash']} {args['task']} {args['taskID']}", comment=args['taskID'])
+        scheduletime = time[0] + " " + time[1] + \
+            " " + time[2] + " " + time[3] + " *"
+        job.setall(scheduletime)
+        cron.write()
 
 
 class Done(Resource):
