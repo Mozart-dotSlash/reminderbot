@@ -5,6 +5,7 @@ from telegram import Update
 import hashlib
 import pymongo
 from crontab import CronTab
+import os
 
 
 class Schedule(Resource):
@@ -18,7 +19,7 @@ class Schedule(Resource):
         parser.add_argument('time', required=True)
 
         args = parser.parse_args()
-        cron = CronTab(user='pratham')
+        cron = CronTab(user=os.environ['USER'])
         job = cron.new(
             command=f"python3 messenger.py {args['userHash']} {args['task']}", comment=args['taskID'])
 
@@ -31,7 +32,7 @@ class Done(Resource):
         parser.add_argument('taskID', required=True)
 
         args = parser.parse_args()
-        cron = CronTab(user='pratham')
+        cron = CronTab(user=os.environ['USER'])
         for job in cron:
             if job.comment == args['taskID']:
                 cron.remove(job)
@@ -50,7 +51,7 @@ userCollection = userHashDb['users']
 
 
 updater = Updater(
-    token="5072089176:AAFOIvxmS-54Ph_01LY33jtf5EdPu15TxPE", use_context=True)
+    token=os.environ['TELEGRAM_TOKEN'], use_context=True)
 dispatcher = updater.dispatcher
 
 
